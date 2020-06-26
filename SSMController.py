@@ -21,6 +21,12 @@ class SSMController:
 
         self.root.mainloop()
 
+    def prevButtonPressed(self, event=None): # pylint: disable=unused-argument
+        result = 0 # TODO
+
+    def nextButtonPressed(self, event=None): # pylint: disable=unused-argument
+        result = 0 # TODO
+
     def removeButtonPressed(self, event=None): # pylint: disable=unused-argument
         result = 0 # TODO
 
