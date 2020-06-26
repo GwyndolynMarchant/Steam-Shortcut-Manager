@@ -2,6 +2,8 @@
 
 This Steam Shortcut Manager GUI project is intended to help work with a Steam install's shortcuts.vdf file - the list of data about non-Steam games added to Steam.
 
+![](https://github.com/millerv/Steam-Shortcut-Manager/blob/master/SSMGUI_version_0.1.png)
+
 # Getting Started
 
 TBD - need to create easy installer for this.
