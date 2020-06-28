@@ -30,8 +30,8 @@ class SSMModel:
     """
 
     def __init__(self, controller):
-        self.readyBlob = None
         self.controller = controller
+        self.cleanedListOfEntries = []
 
     def showVersionAboutInfo(self):
         messagebox.showinfo("About SSM GUI", """Version 0.1
@@ -54,7 +54,10 @@ Made possible by supportive spouse and cats <3""")
             readyBlob = readyBlob[12:].replace('@@@@','@@')
             readyBlob = readyBlob[:-3] # removing the trailing ',@@'
             readyEntryList = readyBlob.split(",@@,") # Breaks up the individual entries
-            print(readyEntryList) # temp test
+            for entry in readyEntryList:
+                newEntryList = entry.split(",")
+                self.cleanedListOfEntries.append(newEntryList)
+            print(self.cleanedListOfEntries[0][2]) # temp test
         except FileNotFoundError:
             print("File not found, please add a non-Steam game while in Steam to generate a shortcuts.vdf")
 
