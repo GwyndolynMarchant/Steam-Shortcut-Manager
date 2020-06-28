@@ -16,8 +16,10 @@ class SSMController:
     def __init__(self):
         self.root = Tk()
 
-        self.model = SSMModel.SSMModel()
+        self.model = SSMModel.SSMModel(self)
         self.view = SSMView.SSMView(self)
+
+        self.listOfNonSteamGames = []
 
         self.root.mainloop()
 
@@ -37,7 +39,7 @@ class SSMController:
         self.model.showVersionAboutInfo()
 
     def openMenuSelected(self, event=None): # pylint: disable=unused-argument
-        self.model.createShortcutDataBlob()
+        self.model.processShortcutFileData()
 
     def categoryExpanded(self, event=None): # pylint: disable=unused-argument
         result = 0 # TODO

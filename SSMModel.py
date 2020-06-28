@@ -29,8 +29,9 @@ class SSMModel:
         tbd
     """
 
-    def __init__(self):
+    def __init__(self, controller):
         self.readyBlob = None
+        self.controller = controller
 
     def showVersionAboutInfo(self):
         messagebox.showinfo("About SSM GUI", """Version 0.1
@@ -38,19 +39,23 @@ The Steam Shortcut Manager GUI displays the non-Steam game shortcuts that appear
 Update and then save each entry in your non-Steam game list as needed, then save the changes.
 
 Author: Val Miller
-Made possible by supportive cats and spouse <3""")
+Made possible by supportive spouse and cats <3""")
 
-    def createShortcutDataBlob(self):
+    def processShortcutFileData(self):
         try:
             fileBlob = filedialog.askopenfile(initialdir = "/",
                                               title = "Select your Steam shortcuts.vdf file...",
                                               filetypes = (("vdf files", "*.vdf"),("all files", "*.*")))
+            # To make this more manageable, we take the non-printable characters in the .vdf and swap them out with 
+            # characters that are easier to process down into something that can be formed into a list of non-Steam
+            # game entries
             readyBlob = fileBlob.read().replace('\x08', '@').replace('\x00',',').replace('\x01','').replace('\x02','').replace("\\", "/")
             readyBlob = re.sub(r"(,,,,,,|,,,,,|,,,,)", ',,', readyBlob)
             readyBlob = readyBlob[12:].replace('@@@@','@@')
-            print(readyBlob) # temp test
+            readyBlob = readyBlob[:-3] # removing the trailing ',@@'
+            readyEntryList = readyBlob.split(",@@,") # Breaks up the individual entries
+            print(readyEntryList) # temp test
         except FileNotFoundError:
             print("File not found, please add a non-Steam game while in Steam to generate a shortcuts.vdf")
 
-            # can get tags contents with this regex:  tags,(.*),@@ - strip off the sections around the capturing group, process that cpatured group?
-
+            # can get tags contents with this regex:  tags,(.*),@@ - strip off the sections around the capturing group, process that captured group?

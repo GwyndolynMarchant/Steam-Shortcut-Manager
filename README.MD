@@ -20,3 +20,4 @@ SEE LICENSE.MD
 * CorporalQuesadilla for the prior work on a command line based Steam Shortcut Manager.
 * Scott Rice for ICE,and his work finding how steam:// IDs are generated.
 * PsychoTheHedgehog for also documenting how shortcuts.vdf is laid out.
+* Doc Buford for the original idea to visualize this in a friendlier format.
