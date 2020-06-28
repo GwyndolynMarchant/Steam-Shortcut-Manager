@@ -57,8 +57,9 @@ Made possible by supportive spouse and cats <3""")
             for entry in readyEntryList:
                 newEntryList = entry.split(",")
                 self.cleanedListOfEntries.append(newEntryList)
-            print(self.cleanedListOfEntries[0][2]) # temp test
+            # print(self.cleanedListOfEntries) # temp test
+            # Need to slice off the tags/category information and work with it
+            # self.cleanedListOfEntries[0][27:] - includes 'tags' and then each entry after this title to the end of the entry
+
         except FileNotFoundError:
             print("File not found, please add a non-Steam game while in Steam to generate a shortcuts.vdf")
-
-            # can get tags contents with this regex:  tags,(.*),@@ - strip off the sections around the capturing group, process that captured group?

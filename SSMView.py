@@ -189,10 +189,10 @@ Example: \"C:\\Program Files (x86)\\Steam\\userdata\\<user_id>\\config\\shortcut
         self.displayTags = ttk.Entry(self, textvariable=self.scTags).grid(row=17, column=3, columnspan=2, sticky=(W,E))
         # =======================================================
         # Add Previous Entry button
-        ttk.Button(self, text="<<< Previous Entry", command=None).grid(row=18, column=1, sticky=(W,E)) # needs command
+        ttk.Button(self, text="<<< Previous Entry", command=self.controller.prevButtonPressed).grid(row=18, column=1, sticky=(W,E))
 
         # Add Next Entry Button
-        ttk.Button(self, text="Next Entry >>>", command=None).grid(row=18, column=2, sticky=(W,E)) # needs command
+        ttk.Button(self, text="Next Entry >>>", command=self.controller.nextButtonPressed).grid(row=18, column=2, sticky=(W,E))
 
         # Add Remove Entry button
         ttk.Button(self, text="Remove Entry", command=None).grid(row=18, column=3, sticky=(W,E)) # needs command
