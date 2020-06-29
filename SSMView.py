@@ -22,6 +22,7 @@ class SSMView(ttk.Frame):
         # Create file menu, attach to the menubar
         self.filemenu = Menu(self.menubar, tearoff=0)
         self.filemenu.add_command(label="Open shortcuts.vdf...", command=self.controller.openMenuSelected)
+        self.filemenu.add_command(label="Save as...", command=None) # need save as here
         self.filemenu.add_separator()
         self.filemenu.add_command(label="Exit", command=self.quit)
         self.menubar.add_cascade(label="File", menu=self.filemenu)
@@ -194,11 +195,11 @@ Example: \"C:\\Program Files (x86)\\Steam\\userdata\\<user_id>\\config\\shortcut
         # Add Next Entry Button
         ttk.Button(self, text="Next Entry >>>", command=self.controller.nextButtonPressed).grid(row=18, column=2, sticky=(W,E))
 
-        # Add Remove Entry button
-        ttk.Button(self, text="Remove Entry", command=None).grid(row=18, column=3, sticky=(W,E)) # needs command
+        # Add Create New Entry button
+        ttk.Button(self, text="Create New Entry", command=self.controller.createNewButtonPressed).grid(row=18, column=3, sticky=(W,E))
 
-        # Add Add/Update Entry button
-        ttk.Button(self, text="Add/Update Entry", command=None).grid(row=18, column=4, sticky=(W,E)) # needs command
+        # Add Update Entry button
+        ttk.Button(self, text="Update Current Entry", command=self.controller.updateButtonPressed).grid(row=18, column=4, sticky=(W,E))
 
         # Add treeview
         # TODO
