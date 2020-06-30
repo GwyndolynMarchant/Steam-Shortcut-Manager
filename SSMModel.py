@@ -1,6 +1,5 @@
 # Display the categories - make them selectable/expandable
 # Select the first category's entry by default and auto-display those elements
-# Make each entry's element editable, but display the current info by default
 # App ID # - compare to crc result - there's a (appid)_hero.png, (appid)_logo.png, and (appid)p.png that
 #   all live in \userdata\(userID)\config\grid
 # Offer buttons to convert vdf to csv and csv to vdf (extra feature)
@@ -17,8 +16,13 @@ from tkinter import messagebox
 class SSMModel:
     """The SSMModel contains the functions used by the Steam Shortcut Manager.
 
+    Args:
+        arg(controller): Storage for the SSMController object.
+    
     Attributes:
-        tbd
+        controller (SSMController): The model sets some attributes on the controller.
+        cleanedListOfEntries (list): The list of non-Steam games from shortcuts.vdf.
+        
     """
 
     def __init__(self, controller):

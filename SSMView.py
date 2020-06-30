@@ -4,8 +4,22 @@ from tkinter import ttk
 class SSMView(ttk.Frame):
     """The SSMView class holds all of the user interface layout.
 
-    Attributes:
+    Args:
         arg(controller): Storage for the SSMController object.
+
+    Attributes:
+        ttk.Frame (Frame): Creating the main frame for the window.
+        grid: Adjusting the layout on the grid inside the frame.
+        controller (SSMController): The view sets some attributes on the controller.
+        menubar: Used for the main menu pulldowns.
+        filemenu: File menu set on the menubar.
+        aboutmenu: About menu set on the menubar.
+        *Header: Label w/short description of contents underneath it.
+        *Label: Labels that denote each element in a non-Steam game entry.
+        sc*: Entry field with contents of an element from a non-Steam game entry.
+        display*: Shows contents in the view.
+        ttk.Button (Button): Clickable buttons to fire off methods.
+        
     """
     def __init__(self, controller):
         """Setting up the GUI in a grid layout. """
