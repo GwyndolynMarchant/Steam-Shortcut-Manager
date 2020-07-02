@@ -17,7 +17,7 @@ class SSMController:
         view (SSMView): The Steam Shortcut Manager view (aka gui).
         nonSteamGamesListPosition (int): Tracks current entry list position for prev/next.
         updatedEntry(list): List of entries, with any updates made by user.
-        
+
     '''
 
     def __init__(self):
@@ -50,11 +50,11 @@ class SSMController:
         # =====================================================================
         self.view.scShortcutPath.set("(DEPRECATED?) STEAM SHORTCUT URL - CAN BE BLANK")
         self.view.scLaunchOptions.set("ADVANCED FLAGS TO USE WITH NON-STEAM GAME EXECUTABLE (Example: --nogui --fullscreen)")
-        self.view.scIsHidden.set("0 FOR VISIBLE, 1 FOR HIDDEN")
-        self.view.scAllowDesktopConfig.set("0 TO DISABLE DESKTOP CONTROLLER CONFIG, 1 TO ENABLE")
-        self.view.scAllowOverlay.set("0 TO DISABLE STEAM OVERLAY, 1 TO ENABLE")
+        self.view.scIsHidden.set("(DEPRECATED?) 0 FOR VISIBLE, 1 FOR HIDDEN")
+        self.view.scAllowDesktopConfig.set("(DEPRECATED?) 0 TO DISABLE DESKTOP CONTROLLER CONFIG, 1 TO ENABLE")
+        self.view.scAllowOverlay.set("(DEPRECATED?) 0 TO DISABLE STEAM OVERLAY, 1 TO ENABLE")
         # =====================================================================
-        self.view.scOpenVR.set("0 TO DISABLE, 1 TO ADD TO VR LIBRARY CATEGORY")
+        self.view.scOpenVR.set("(DEPRECATED?) 0 TO DISABLE, 1 TO ADD TO VR LIBRARY CATEGORY")
         self.view.scDevkit.set("(UNKNOWN) OK TO BLANK OUT")
         self.view.scDevkitGameID.set("(UNKNOWN) OK TO BLANK OUT")
         self.view.scLastPlaytime.set("(DEPRECATED) OK TO BLANK OUT")
@@ -74,8 +74,6 @@ class SSMController:
             self.elementsList = self.updatedEntry.split(",")
             # Need to replace the same list entry
             self.model.cleanedListOfEntries[self.nonSteamGameListPosition] = self.elementsList
-            print("Printing updated cleanedListOfEntries:") # temp test
-            print(self.model.cleanedListOfEntries) # temp test
 
     def aboutMenuSelected(self, event=None): # pylint: disable=unused-argument
         self.model.showVersionAboutInfo()
@@ -84,6 +82,10 @@ class SSMController:
         self.model.processShortcutFileData()
         messagebox.showinfo("Creating Backup","Creating shortcuts.vdf.bk - remove the .bk to restore your original shortcuts.vdf file.")
         self.setAllElementsInEntry()
+
+    def saveAsMenuSelected(self, event=None): # pylint: disable=unused-argument
+        self.model.createNewShortcutFile()
+        messagebox.showinfo("Saving shortcuts.vdf","Created and saved new shortcuts.vdf file.")
 
     def categoryExpanded(self, event=None): # pylint: disable=unused-argument
         result = 0 # TODO

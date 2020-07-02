@@ -22,12 +22,13 @@ class SSMModel:
     Attributes:
         controller (SSMController): The model sets some attributes on the controller.
         cleanedListOfEntries (list): The list of non-Steam games from shortcuts.vdf.
-        
+
     """
 
     def __init__(self, controller):
         self.controller = controller
         self.cleanedListOfEntries = []
+        self.sourceFilePath = ""
 
     def showVersionAboutInfo(self):
         messagebox.showinfo("About SSM GUI", """Version 0.1
@@ -50,9 +51,9 @@ After making changes, go to the File menu and select 'Save As' to create/update 
                                               title = "Select your Steam shortcuts.vdf file...",
                                               filetypes = (("vdf files", "*.vdf"),("all files", "*.*")))
             # make a backup copy
-            sourceFilePath = fileBlob.name
-            destFilePath = sourceFilePath.replace(".vdf",".vdf.bk")
-            copy2(sourceFilePath, destFilePath)
+            self.sourceFilePath = fileBlob.name
+            destFilePath = self.sourceFilePath.replace(".vdf",".vdf.bk")
+            copy2(self.sourceFilePath, destFilePath)
 
             # To make this more manageable, we take the non-printable characters in the .vdf and swap them out with 
             # characters that are easier to process down into something that can be formed into a list of non-Steam
@@ -68,4 +69,55 @@ After making changes, go to the File menu and select 'Save As' to create/update 
                 self.cleanedListOfEntries.append(newEntryList)
             # print(self.cleanedListOfEntries) # temp test
         except FileNotFoundError:
+            # Create warning message visible to users. TODO
             print("File not found, please add a non-Steam game while in Steam to generate a shortcuts.vdf")
+
+    def createNewShortcutFile(self):
+        # print(self.sourceFilePath) # test
+        shortcutsIntroText = '\x00'+'shortcuts'+'\x00'
+        shortcutsText = ''
+        shortcutsEndingText = '\x08\x08'
+
+        length = len(self.cleanedListOfEntries)
+        position = 0
+
+        while position < length:
+            shortcutsText += '\x00'+self.cleanedListOfEntries[position][0]+'\x00'+\
+                             '\x01'+'appName'+'\x00'+self.cleanedListOfEntries[position][2]+'\x00'+\
+                             '\x01'+'exe'+'\x00'+self.cleanedListOfEntries[position][4]+'\x00'+\
+                             '\x01'+'StartDir'+'\x00'+self.cleanedListOfEntries[position][6]+'\x00'+\
+                             '\x01'+'icon'+'\x00'+self.cleanedListOfEntries[position][8]+'\x00'+\
+                             '\x01'+'ShortcutPath'+'\x00'+self.cleanedListOfEntries[position][10]+'\x00'+\
+                             '\x01'+'LaunchOptions'+'\x00'+self.cleanedListOfEntries[position][12]+'\x00'+\
+                             '\x02'+'IsHidden'+'\x00\x00\x00\x00\x00'+\
+                             '\x02'+'AllowDesktopConfig'+'\x00\x01\x00\x00\x00'+\
+                             '\x02'+'AllowOverlay'+'\x00\x01\x00\x00\x00'+\
+                             '\x02'+'openvr'+'\x00\x00\x00\x00\x00'+\
+                             '\x02'+'Devkit'+'\x00\x00\x00\x00\x00'+\
+                             '\x01'+'DevkitGameID'+'\x00\x00'+\
+                             '\x02'+'LastPlayTime'+'\x00'+self.cleanedListOfEntries[position][26]+'\x00'+\
+                             'tags'+'\x00'+self.setupTags(position)+'\x08\x08'
+            position += 1
+        # print(shortcutsIntroText+shortcutsText+shortcutsEndingText) # temp test
+        try:
+            dataFile = filedialog.asksaveasfile(mode='w',
+                                                defaultextension=".vdf",
+                                                initialdir="/",
+                                                title="Save shortcuts.vdf file...",
+                                                filetypes=(("vdf files", "*.vdf"),("all files", "*.*")))
+            dataFile.write(shortcutsIntroText+shortcutsText+shortcutsEndingText) # TODO FIX SLASH ORIENTATION
+            dataFile.close()
+        except IOError:
+            # Create warning message visible to users. TODO
+            print("Unable to save file to previous shortcuts.vdf location, please check and try again later.")
+    
+    def setupTags(self, pos):
+        finalString=''
+        remainingTags = self.cleanedListOfEntries[pos][28:] # the tags can show multiple categories
+        counter = 0
+        while counter < len(remainingTags):
+            finalString += '\x01'+remainingTags[counter]+'\x00'+remainingTags[counter+1]+'\x00'
+            counter += 2
+        # print(finalString) # temp test
+        return finalString        
+                             

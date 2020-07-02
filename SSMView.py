@@ -19,7 +19,7 @@ class SSMView(ttk.Frame):
         sc*: Entry field with contents of an element from a non-Steam game entry.
         display*: Shows contents in the view.
         ttk.Button (Button): Clickable buttons to fire off methods.
-        
+
     """
     def __init__(self, controller):
         """Setting up the GUI in a grid layout. """
@@ -36,7 +36,7 @@ class SSMView(ttk.Frame):
         # Create file menu, attach to the menubar
         self.filemenu = Menu(self.menubar, tearoff=0)
         self.filemenu.add_command(label="Open shortcuts.vdf...", command=self.controller.openMenuSelected)
-        self.filemenu.add_command(label="Save as...", command=None) # need save as here
+        self.filemenu.add_command(label="Save as...", command=self.controller.saveAsMenuSelected)
         self.filemenu.add_separator()
         self.filemenu.add_command(label="Exit", command=self.quit)
         self.menubar.add_cascade(label="File", menu=self.filemenu)
@@ -248,18 +248,18 @@ Example: \"C:\\Program Files (x86)\\Steam\\userdata\\<user_id>\\config\\shortcut
         self.mainDescriptionHeader.configure(text="Advanced flags to add to executable.")
 
     def updateIsHiddenLabelEntered(self, event=None):
-        self.mainDescriptionHeader.configure(text="Set to 0 for visible, 1 for hidden.")
+        self.mainDescriptionHeader.configure(text="(deprecated?) Set to 0 for visible, 1 for hidden.")
 
     def updateAllowDesktopCfgLabelEntered(self, event=None):
-        self.mainDescriptionHeader.configure(text="Set to 0 to disable, 1 to enable controller desktop config.")
+        self.mainDescriptionHeader.configure(text="(deprecated?) Set to 0 to disable, 1 to enable controller desktop config.")
 
     def updateAllowOverlayLabelEntered(self, event=None):
-        self.mainDescriptionHeader.configure(text="Set to 0 to disable, 1 to enable Steam Overlay.")
+        self.mainDescriptionHeader.configure(text="(deprecated?) Set to 0 to disable, 1 to enable Steam Overlay.")
 
     # =========================================================================
 
     def updateOpenVRLabelEntered(self, event=None):
-        self.mainDescriptionHeader.configure(text="Set to 0 to disable, 1 to add VR Library category.")
+        self.mainDescriptionHeader.configure(text="(deprecated?) Set to 0 to disable, 1 to add VR Library category.")
 
     def updateDevkitLabelEntered(self, event=None):
         self.mainDescriptionHeader.configure(text="(unknown) Ok to leave blank.")
