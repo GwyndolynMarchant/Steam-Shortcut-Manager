@@ -31,11 +31,22 @@ class SSMModel:
         self.sourceFilePath = ""
 
     def showVersionAboutInfo(self):
-        messagebox.showinfo("About SSM GUI", """Version 0.1
+        messagebox.showinfo("About SSM GUI", """Version 0.9
+
 The Steam Shortcut Manager GUI displays the non-Steam game shortcuts that appear in your userdata's shortcuts.vdf file in a friendlier format.
-Update and then save each entry in your non-Steam game list as needed, then save the changes.
+
+1. Load your shortcuts.vdf file via File > Open. (Look in your Steam install folder and look for the 'userdata\<user_id>\config' folder.) Note that SSMGUI will automatically create a .bk backup file of your original shortcuts.vdf - remove the .bk to restore that older shortcuts.vdf if needed.
+
+2. View each entry in your non-Steam games list with the Previous and Next Entry buttons.
+
+3. Make any changes/edits to current entries and click on the Update Current Entry button to store your changes temporarily.
+
+4. Use the Create New Entry button to add additional non-Steam games outside of Steam, and then click on Update Current Entry to store the changes.
+
+5. Go to File > Save As to save your updated shortcuts.vdf info  - you can overwrite your original shortcuts.vdf, or save as a new file (though Steam will only look for a file named shortcuts.vdf to my knowledge).
 
 Author: Val Miller
+
 Made possible by supportive spouse and cats <3""")
 
     def showNewEntryWarning(self):
@@ -43,7 +54,7 @@ Made possible by supportive spouse and cats <3""")
 
 If you're unsure about this, use Steam's UI to add a new entry's information instead.
 
-After making changes, go to the File menu and select 'Save As' to create/update your shortcuts.vdf - it must be in the correct Steam userdata folder for Steam to see your changes when restarting that application.""")
+After making changes, click Update Current Entry, and then go to the File menu and select 'Save As' to create/update your shortcuts.vdf - it must be in the correct Steam userdata folder for Steam to see your changes when restarting that application.""")
 
     def processShortcutFileData(self):
         try:
@@ -69,8 +80,8 @@ After making changes, go to the File menu and select 'Save As' to create/update 
                 self.cleanedListOfEntries.append(newEntryList)
             # print(self.cleanedListOfEntries) # temp test
         except FileNotFoundError:
-            # Create warning message visible to users. TODO
-            print("File not found, please add a non-Steam game while in Steam to generate a shortcuts.vdf")
+            messagebox.showerror("File Error","File not found, please add a non-Steam game while in Steam to generate a shortcuts.vdf.")
+            print("File not found, please add a non-Steam game while in Steam to generate a shortcuts.vdf.")
 
     def createNewShortcutFile(self):
         # print(self.sourceFilePath) # test
@@ -105,11 +116,12 @@ After making changes, go to the File menu and select 'Save As' to create/update 
                                                 initialdir="/",
                                                 title="Save shortcuts.vdf file...",
                                                 filetypes=(("vdf files", "*.vdf"),("all files", "*.*")))
-            dataFile.write(shortcutsIntroText+shortcutsText+shortcutsEndingText) # TODO FIX SLASH ORIENTATION
+            dataBlob = (shortcutsIntroText+shortcutsText+shortcutsEndingText).replace("/", "\\")
+            dataFile.write(dataBlob)
             dataFile.close()
         except IOError:
-            # Create warning message visible to users. TODO
-            print("Unable to save file to previous shortcuts.vdf location, please check and try again later.")
+            messagebox.showerror("Unable to save file","Unable to save file to selected location, please check and try again later.")
+            print("Unable to save file to selected location, please check and try again later.")
     
     def setupTags(self, pos):
         finalString=''

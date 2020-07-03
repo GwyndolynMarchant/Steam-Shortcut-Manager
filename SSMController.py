@@ -15,13 +15,16 @@ class SSMController:
     Attributes:
         model (SSMModel): The Steam Shortcut Manager model.
         view (SSMView): The Steam Shortcut Manager view (aka gui).
-        nonSteamGamesListPosition (int): Tracks current entry list position for prev/next.
+        nonSteamGameListPosition (int): Tracks current entry list position for prev/next.
         updatedEntry(list): List of entries, with any updates made by user.
 
     '''
 
     def __init__(self):
         self.root = Tk()
+
+        ssmguiIcon=PhotoImage(file="IconByRoboxel.png")
+        self.root.iconphoto(False, ssmguiIcon)
 
         self.model = SSMModel.SSMModel(self)
         self.view = SSMView.SSMView(self)
@@ -49,7 +52,7 @@ class SSMController:
         self.view.scIcon.set("FILEPATH TO 256x256 PNG ICON (Example: C:/Program Files/SLBros/Luigi.png)")
         # =====================================================================
         self.view.scShortcutPath.set("(DEPRECATED?) STEAM SHORTCUT URL - CAN BE BLANK")
-        self.view.scLaunchOptions.set("ADVANCED FLAGS TO USE WITH NON-STEAM GAME EXECUTABLE (Example: --nogui --fullscreen)")
+        self.view.scLaunchOptions.set("ADVANCED FLAGS TO USE WITH NON-STEAM GAME EXECUTABLE (Example: --fullscreen)")
         self.view.scIsHidden.set("(DEPRECATED?) 0 FOR VISIBLE, 1 FOR HIDDEN")
         self.view.scAllowDesktopConfig.set("(DEPRECATED?) 0 TO DISABLE DESKTOP CONTROLLER CONFIG, 1 TO ENABLE")
         self.view.scAllowOverlay.set("(DEPRECATED?) 0 TO DISABLE STEAM OVERLAY, 1 TO ENABLE")
@@ -58,22 +61,25 @@ class SSMController:
         self.view.scDevkit.set("(UNKNOWN) OK TO BLANK OUT")
         self.view.scDevkitGameID.set("(UNKNOWN) OK TO BLANK OUT")
         self.view.scLastPlaytime.set("(DEPRECATED) OK TO BLANK OUT")
-        self.view.scTags.set("A LIST WITH INDEX, A SPACE, THEN NAME FOR EACH CATEGORY (Example: 0 Platformers 1 Favorites 2 Souls-like)")
+        self.view.scTags.set("A LIST WITH INDEX, A COMMA, THEN NAME FOR EACH CATEGORY (Example: 0,Platformers,1,Favorites,2,Souls-like)")
         # ---------------------------------------------------------------------
+        self.nonSteamGameListPosition = int(self.view.scIndex.get())
         self.model.showNewEntryWarning()
 
     def updateButtonPressed(self, event=None): # pylint: disable=unused-argument
-        if self.view.scIndex.get() != str(len(self.model.cleanedListOfEntries)): # making sure we aren't on a new entry
-            self.updatedEntry = self.view.scIndex.get() +","+ "appName" +","+ self.view.scAppName.get() +","+\
-                                "exe"+","+ self.view.scExePath.get() +","+ "StartDir"+","+ self.view.scStartDir.get() +","+\
-                                "icon"+","+ self.view.scIcon.get() +","+ "ShortcutPath"+","+ self.view.scShortcutPath.get() +","+\
-                                "LaunchOptions"+","+self.view.scLaunchOptions.get() +","+ "IsHidden" + "," +self.view.scIsHidden.get() +","+\
-                                "AllowDesktopConfig"+","+self.view.scAllowDesktopConfig.get() +","+ "AllowOverlay"+","+self.view.scAllowOverlay.get() +","+\
-                                "openvr"+","+self.view.scOpenVR.get() +","+ "Devkit"+","+self.view.scDevkit.get() +","+ "DevkitGameID"+","+self.view.scDevkitGameID.get() +","+\
-                                "LastPlayTime"+","+self.view.scLastPlaytime.get() +","+ "tags"+","+ self.view.scTags.get()
-            self.elementsList = self.updatedEntry.split(",")
-            # Need to replace the same list entry
+        self.updatedEntry = self.view.scIndex.get() +","+ "appName" +","+ self.view.scAppName.get() +","+\
+                            "exe"+","+ self.view.scExePath.get() +","+ "StartDir"+","+ self.view.scStartDir.get() +","+\
+                            "icon"+","+ self.view.scIcon.get() +","+ "ShortcutPath"+","+ self.view.scShortcutPath.get() +","+\
+                            "LaunchOptions"+","+self.view.scLaunchOptions.get() +","+ "IsHidden" + "," +self.view.scIsHidden.get() +","+\
+                            "AllowDesktopConfig"+","+self.view.scAllowDesktopConfig.get() +","+ "AllowOverlay"+","+self.view.scAllowOverlay.get() +","+\
+                            "openvr"+","+self.view.scOpenVR.get() +","+ "Devkit"+","+self.view.scDevkit.get() +","+ "DevkitGameID"+","+self.view.scDevkitGameID.get() +","+\
+                            "LastPlayTime"+","+self.view.scLastPlaytime.get() +","+ "tags"+","+ self.view.scTags.get()
+        self.elementsList = self.updatedEntry.split(",")
+        # Need to replace or add new entry to list
+        if int(self.view.scIndex.get()) != len(self.model.cleanedListOfEntries):
             self.model.cleanedListOfEntries[self.nonSteamGameListPosition] = self.elementsList
+        else:
+            self.model.cleanedListOfEntries.append(self.elementsList)
 
     def aboutMenuSelected(self, event=None): # pylint: disable=unused-argument
         self.model.showVersionAboutInfo()

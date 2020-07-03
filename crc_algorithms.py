@@ -75,7 +75,7 @@ class Crc(object):
 
         self.MSB_Mask = 0x1 << (self.Width - 1)
         self.Mask = ((self.MSB_Mask - 1) << 1) | 1
-        if self.TableIdxWidth != None:
+        if self.TableIdxWidth is not None:
             self.TableWidth = 1 << self.TableIdxWidth
         else:
             self.TableIdxWidth = 8
@@ -96,7 +96,7 @@ class Crc(object):
         return the non-direct init if the direct algorithm has been selected.
         """
         crc = init
-        for i in range(self.Width):
+        for _ in range(self.Width): # replacing variable with _ to clean up warning
             bit = crc & 0x01
             if bit:
                 crc^= self.Poly
@@ -113,7 +113,7 @@ class Crc(object):
         reflect a data word, i.e. reverts the bit order.
         """
         x = data & 0x01
-        for i in range(width - 1):
+        for _ in range(width - 1):
             data >>= 1
             x = (x << 1) | (data & 0x01)
         return x
@@ -191,7 +191,7 @@ class Crc(object):
             if self.ReflectIn:
                 register = self.reflect(register, self.TableIdxWidth)
             register = register << (self.Width - self.TableIdxWidth + self.CrcShift)
-            for j in range(self.TableIdxWidth):
+            for _ in range(self.TableIdxWidth):
                 if register & (self.MSB_Mask << self.CrcShift) != 0:
                     register = (register << 1) ^ (self.Poly << self.CrcShift)
                 else:
@@ -226,4 +226,3 @@ class Crc(object):
         if self.ReflectOut:
             register = self.reflect(register, self.Width)
         return register ^ self.XorOut
-
