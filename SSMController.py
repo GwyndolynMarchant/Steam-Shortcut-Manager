@@ -11,7 +11,7 @@ class SSMController:
 
     Args:
         none
-    
+
     Attributes:
         model (SSMModel): The Steam Shortcut Manager model.
         view (SSMView): The Steam Shortcut Manager view (aka gui).

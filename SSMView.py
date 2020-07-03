@@ -65,7 +65,7 @@ Example: \"C:\\Program Files (x86)\\Steam\\userdata\\<user_id>\\config\\shortcut
         self.mainDescriptionHeader.grid(row=1, column=3, columnspan=2)
 
         # Add several label fields for each element of a shortcut entry
-        # Note: Tkinter will return a NoneType if you do a .grid all on one line 
+        # Note: Tkinter will return a NoneType if you do a .grid all on one line
         # with the original Label creation, make sure to do the .grid separately
         self.indexLabel = ttk.Label(self, text="Index Number")
         self.indexLabel.bind("<Enter>", self.updateIndexLabelEntered)
@@ -222,58 +222,58 @@ Example: \"C:\\Program Files (x86)\\Steam\\userdata\\<user_id>\\config\\shortcut
         for child in self.winfo_children():
             child.grid_configure(padx=2, pady=5)
 
-    # Need functions for when a mouse enters each particular label to update and 
+    # Need functions for when a mouse enters each particular label to update and
     # display the explaination text
-    def updateIndexLabelEntered(self, event=None):
+    def updateIndexLabelEntered(self, event=None): # pylint: disable=unused-argument
         self.mainDescriptionHeader.configure(text="Index number of entry, starting with 0.")
 
-    def updateAppNameLabelEntered(self, event=None):
+    def updateAppNameLabelEntered(self, event=None): # pylint: disable=unused-argument
         self.mainDescriptionHeader.configure(text="Name of the non-Steam game.")
 
-    def updateExePathLabelEntered(self, event=None):
+    def updateExePathLabelEntered(self, event=None): # pylint: disable=unused-argument
         self.mainDescriptionHeader.configure(text="Full filepath to the actual .exe file.")
 
-    def updateStartDirLabelEntered(self, event=None):
+    def updateStartDirLabelEntered(self, event=None): # pylint: disable=unused-argument
         self.mainDescriptionHeader.configure(text="Folder filepath containing .exe file.")
 
-    def updateIconLabelEntered(self, event=None):
+    def updateIconLabelEntered(self, event=None): # pylint: disable=unused-argument
         self.mainDescriptionHeader.configure(text="256x256 .png file location.")
 
     # =========================================================================
 
-    def updateShortcutPathLabelEntered(self, event=None):
+    def updateShortcutPathLabelEntered(self, event=None): # pylint: disable=unused-argument
         self.mainDescriptionHeader.configure(text="(deprecated?) Steam shortcut URL.")
-    
-    def updateLaunchOptsLabelEntered(self, event=None):
+
+    def updateLaunchOptsLabelEntered(self, event=None): # pylint: disable=unused-argument
         self.mainDescriptionHeader.configure(text="Advanced flags to add to executable.")
 
-    def updateIsHiddenLabelEntered(self, event=None):
+    def updateIsHiddenLabelEntered(self, event=None): # pylint: disable=unused-argument
         self.mainDescriptionHeader.configure(text="(deprecated?) Set to 0 for visible, 1 for hidden.")
 
-    def updateAllowDesktopCfgLabelEntered(self, event=None):
+    def updateAllowDesktopCfgLabelEntered(self, event=None): # pylint: disable=unused-argument
         self.mainDescriptionHeader.configure(text="(deprecated?) Set to 0 to disable, 1 to enable controller desktop config.")
 
-    def updateAllowOverlayLabelEntered(self, event=None):
+    def updateAllowOverlayLabelEntered(self, event=None): # pylint: disable=unused-argument
         self.mainDescriptionHeader.configure(text="(deprecated?) Set to 0 to disable, 1 to enable Steam Overlay.")
 
     # =========================================================================
 
-    def updateOpenVRLabelEntered(self, event=None):
+    def updateOpenVRLabelEntered(self, event=None): # pylint: disable=unused-argument
         self.mainDescriptionHeader.configure(text="(deprecated?) Set to 0 to disable, 1 to add VR Library category.")
 
-    def updateDevkitLabelEntered(self, event=None):
+    def updateDevkitLabelEntered(self, event=None): # pylint: disable=unused-argument
         self.mainDescriptionHeader.configure(text="(unknown) Ok to leave blank.")
 
-    def updateDevkitGameIDLabelEntered(self, event=None):
+    def updateDevkitGameIDLabelEntered(self, event=None): # pylint: disable=unused-argument
         self.mainDescriptionHeader.configure(text="(unknown) Ok to leave blank.")
 
-    def updateLastPlaytimeLabelEntered(self, event=None):
+    def updateLastPlaytimeLabelEntered(self, event=None): # pylint: disable=unused-argument
         self.mainDescriptionHeader.configure(text="(deprecated) Ok to blank this out - may contain gibberish.")
 
-    def updateTagsLabelEntered(self, event=None):
+    def updateTagsLabelEntered(self, event=None): # pylint: disable=unused-argument
         self.mainDescriptionHeader.configure(text="List of categories/tags used by user on this entry.")
 
-    def updateLabelExited(self, event=None):
+    def updateLabelExited(self, event=None): # pylint: disable=unused-argument
         self.mainDescriptionHeader.configure(text="""How To Use:
 Provide the filepath (including drive letter) to the Steam shortcuts.vdf via the File menu pulldown. 
 Example: \"C:\\Program Files (x86)\\Steam\\userdata\\<user_id>\\config\\shortcuts.vdf\"

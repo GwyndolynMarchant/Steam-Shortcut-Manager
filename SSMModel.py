@@ -8,7 +8,6 @@
 # C:/Users/uwmil/Downloads/shortcuts.vdf
 
 import re
-import os
 from shutil import copy2
 from tkinter import filedialog
 from tkinter import messagebox
@@ -18,7 +17,7 @@ class SSMModel:
 
     Args:
         arg(controller): Storage for the SSMController object.
-    
+
     Attributes:
         controller (SSMController): The model sets some attributes on the controller.
         cleanedListOfEntries (list): The list of non-Steam games from shortcuts.vdf.
@@ -31,7 +30,7 @@ class SSMModel:
         self.sourceFilePath = ""
 
     def showVersionAboutInfo(self):
-        messagebox.showinfo("About SSM GUI", """Version 0.9
+        messagebox.showinfo("About SSM GUI", r"""Version 1.0
 
 The Steam Shortcut Manager GUI displays the non-Steam game shortcuts that appear in your userdata's shortcuts.vdf file in a friendlier format.
 
@@ -66,7 +65,7 @@ After making changes, click Update Current Entry, and then go to the File menu a
             destFilePath = self.sourceFilePath.replace(".vdf",".vdf.bk")
             copy2(self.sourceFilePath, destFilePath)
 
-            # To make this more manageable, we take the non-printable characters in the .vdf and swap them out with 
+            # To make this more manageable, we take the non-printable characters in the .vdf and swap them out with
             # characters that are easier to process down into something that can be formed into a list of non-Steam
             # game entries
             readyBlob = fileBlob.read().replace('\x08', '@').replace('\x00',',').replace('\x01','').replace('\x02','').replace("\\", "/")
@@ -122,7 +121,7 @@ After making changes, click Update Current Entry, and then go to the File menu a
         except IOError:
             messagebox.showerror("Unable to save file","Unable to save file to selected location, please check and try again later.")
             print("Unable to save file to selected location, please check and try again later.")
-    
+
     def setupTags(self, pos):
         finalString=''
         remainingTags = self.cleanedListOfEntries[pos][28:] # the tags can show multiple categories
@@ -131,5 +130,4 @@ After making changes, click Update Current Entry, and then go to the File menu a
             finalString += '\x01'+remainingTags[counter]+'\x00'+remainingTags[counter+1]+'\x00'
             counter += 2
         # print(finalString) # temp test
-        return finalString        
-                             
+        return finalString
