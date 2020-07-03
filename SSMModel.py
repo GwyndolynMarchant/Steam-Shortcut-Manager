@@ -4,9 +4,6 @@
 #   all live in \userdata\(userID)\config\grid
 # Offer buttons to convert vdf to csv and csv to vdf (extra feature)
 
-# E:/SteamLibrary/userdata/35696109/config/shortcuts.vdf
-# C:/Users/uwmil/Downloads/shortcuts.vdf
-
 import re
 from shutil import copy2
 from tkinter import filedialog
@@ -30,7 +27,7 @@ class SSMModel:
         self.sourceFilePath = ""
 
     def showVersionAboutInfo(self):
-        messagebox.showinfo("About SSM GUI", r"""Version 1.0
+        messagebox.showinfo("About SSM GUI", r"""Version 1.1
 
 The Steam Shortcut Manager GUI displays the non-Steam game shortcuts that appear in your userdata's shortcuts.vdf file in a friendlier format.
 
@@ -57,6 +54,7 @@ After making changes, click Update Current Entry, and then go to the File menu a
 
     def processShortcutFileData(self):
         try:
+            self.cleanedListOfEntries.clear()
             fileBlob = filedialog.askopenfile(initialdir = "/",
                                               title = "Select your Steam shortcuts.vdf file...",
                                               filetypes = (("vdf files", "*.vdf"),("all files", "*.*")))

@@ -87,6 +87,9 @@ class SSMController:
     def openMenuSelected(self, event=None): # pylint: disable=unused-argument
         self.model.processShortcutFileData()
         messagebox.showinfo("Creating Backup","Creating shortcuts.vdf.bk - remove the .bk to restore your original shortcuts.vdf file.")
+        if (len(self.model.cleanedListOfEntries[self.nonSteamGameListPosition]) == 1):
+            messagebox.showerror("Empty File Found","This shortcuts.vdf file is empty, please add a new entry via the in-Steam menu.")
+            return None
         self.setAllElementsInEntry()
 
     def saveAsMenuSelected(self, event=None): # pylint: disable=unused-argument
@@ -97,6 +100,9 @@ class SSMController:
         result = 0 # TODO
 
     def setAllElementsInEntry(self):
+        # print (self.model.cleanedListOfEntries[self.nonSteamGameListPosition]) # temp test
+        # print (self.nonSteamGameListPosition)
+        # print (len(self.model.cleanedListOfEntries[self.nonSteamGameListPosition]))
         self.view.scIndex.set(self.model.cleanedListOfEntries[self.nonSteamGameListPosition][0])
         self.view.scAppName.set(self.model.cleanedListOfEntries[self.nonSteamGameListPosition][2])
         self.view.scExePath.set(self.model.cleanedListOfEntries[self.nonSteamGameListPosition][4])
