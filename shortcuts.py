@@ -1,58 +1,19 @@
 #-------------------------------------------------------------------------------
-# Name:         Steam Shortcuts Manager GUI
-# Version:      0.1
-# Date:         May 6, 2020
+# Name:        Steam Shortcut Manager
+# Purpose:     Command line tool to add non-Steam application shortcuts.
+#              Intended to be used in conjunction with a tool that automates the adding of shortcuts.
+#              In addition to adding the shortcut, the steam://rungameid/### is returned.
+#              Close Steam before running!
 #
-# Purpose:      A friendly user interface over previous work from Corporal
-#               Quesadilla's (https://github.com/CorporalQuesadilla), Steam Shortcut
-#               Manager, pulled forward and updated to align with current (as of
-#               this writing) values used for the non-Steam games shorcuts.
+#              Should be cross-platform with Linux/Mac/Windows.
 #
-#               Pulls down current shortcuts.vdf from user-provided path, updates
-#               with entries in csv.
-#               Creates shortcuts.vdf at user-provided path if not present.
+#              I might make a GUI, or support removing shortcuts at some point. For now, it just adds shortcuts.
 #
-#               Sample csv provided, fill in the blanks and let this script
-#               process it into your Steam install.
+#              Oh, and you NEED to have an existing shortcuts.vdf - basically, add at least one non-steam shortcut via the GUI.
+#              This is an incredibly simple fix for me to implement, I'm just lazy.
 #
-# Info:         Refer to https://github.com/CorporalQuesadilla/Steam-Shortcut-Manager/wiki
-#               for more context and information
-#
-# License:      (From https://github.com/CorporalQuesadilla/Steam-Shortcut-Manager)
-#
-#               Everything in this file is under GPL v3 (https://www.gnu.org/licenses/gpl-3.0.en.html)
-#               with the exception of the getURL() function, which is under MIT license
-#               and adapted from Scott Rice's ICE application
-#               https://github.com/scottrice/Ice/blob/7130b54c8d2fa7d0e2c0994ca1f2aa3fb2a27ba9/ice/steam_grid.py
-#
-#               Since I have adapted these few lines of code, I must include the following
-#               (between the sets of three asterisks).
-#               Again, the following license refers EXPLICITLY to the contents of the getURL() function.
-#               ***
-#               Copyright (c) 2012-2013, 2013 Scott Rice
-#               All rights reserved.
-#
-#               Permission is hereby granted, free of charge, to any person obtaining a copy
-#               of this software and associated documentation files (the "Software"), to
-#               deal in the Software without restriction, including without limitation the
-#               rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
-#               sell copies of the Software, and to permit persons to whom the Software is
-#               furnished to do so, subject to the following conditions:
-#
-#               The above copyright notice and this permission notice shall be included in
-#               all copies or substantial portions of the Software.
-#
-#               THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-#               IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-#               FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-#               AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-#               LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-#               FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
-#               IN THE SOFTWARE.
-#               ***
-#-------------------------------------------------------------------------------
-#
-#
+#              For more information, I'll probably document the file format itself somewhere on a github wiki page sometime.
+#              https://github.com/CorporalQuesadilla/Steam-Shortcut-Manager/wiki
 #
 # Usage:       Run from commandline. Needs the following arguments in this order:
 #              Argument                 Explanation
@@ -75,7 +36,42 @@
 #
 #              Example:
 #              python shortcuts.py "C:\Program Files (x86)\Steam\userdata\ID_HERE\config\shortcuts.vdf" WoohooMyProgramWorks C:\d.exe C:\ "C:\Program Files (x86)\Steam\bin\steamservice.exe" "" WHATUPLAUNCH 0 1 1 1 0 tag1 tag2
-
+#
+# OG Author:   Corporal Quesadilla
+# Updates by:  Gwyndolyn Marchant, Val Miller
+#
+# Created:     2018.07.15
+# Update:      2023.01.08
+# Copyright:   (c) Corporal Quesadilla 2018
+# Licence:     Everything in this file is under GPL v3 (https://www.gnu.org/licenses/gpl-3.0.en.html)
+#              with the exception of the getURL() function, which is under MIT license and adapted from Scott Rice's ICE application
+#              https://github.com/scottrice/Ice/blob/7130b54c8d2fa7d0e2c0994ca1f2aa3fb2a27ba9/ice/steam_grid.py
+#
+#              Since I have adapted these few lines of code, I must include the following (between the sets of three asterisks).
+#              Again, the following license refers EXPLICITLY to the contents of the getURL() function.
+#              ***
+#              Copyright (c) 2012-2013, 2013 Scott Rice
+#              All rights reserved.
+#
+#              Permission is hereby granted, free of charge, to any person obtaining a copy
+#              of this software and associated documentation files (the "Software"), to
+#              deal in the Software without restriction, including without limitation the
+#              rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+#              sell copies of the Software, and to permit persons to whom the Software is
+#              furnished to do so, subject to the following conditions:
+#
+#              The above copyright notice and this permission notice shall be included in
+#              all copies or substantial portions of the Software.
+#
+#              THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+#              IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+#              FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+#              AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+#              LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+#              FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+#              IN THE SOFTWARE.
+#              ***
+#-------------------------------------------------------------------------------
 import os
 import sys
 import crc_algorithms
@@ -84,12 +80,12 @@ def findLastEntryNumberAndPosition(pathToShortcutsVDF):
 
     # From the end, search backwards to the beginning of the last entry to get its ID
     foundChars = 1
-    target = '\x00\x01AppName'
+    target = '\x00\x02appid'
     lookingfor = 'target'
-    lastEntryNumber = 0
+    lastEntryNumber = ''
     lastEntryPosition = 0
 
-    f = open(str(pathToShortcutsVDF), 'r')
+    f = open(str(pathToShortcutsVDF), 'r', encoding='utf-8', errors='ignore')
     fileContents = f.read()
 
     for i in range(len(fileContents)):
@@ -121,12 +117,12 @@ def findLastEntryNumberAndPosition(pathToShortcutsVDF):
 
 def addEntry(pathToShortcutsVDF, inputTuple):
     # Entries are added before the last two characters of the file
-    f = open(str(pathToShortcutsVDF), 'r+')
+    f = open(str(pathToShortcutsVDF), 'rb+')
     fileContents = f.read()
-    f.seek(len(fileContents) - 2)
+    f.seek(-2, 2)
     endFileContents = f.read()
-    f.seek(len(fileContents) - 2)
-    f.write(createEntry(inputTuple) + endFileContents)
+    f.seek(-2, 2)
+    f.write(bytes(createEntry(inputTuple), 'utf-8') + endFileContents)
     f.close()
 
 def createEntry(inputTuple):
@@ -143,52 +139,46 @@ def createEntry(inputTuple):
     var_allowDeskConf   = inputTuple[8]
     var_allowOverlay    = inputTuple[9]
     var_openVR          = inputTuple[10]
-    var_devkit          = inputTuple[11] # New
-    var_devkitGameID    = inputTuple[12] # New
-    var_lastPlayTime    = inputTuple[13]
-    var_tags            = inputTuple[14]
-
+    var_lastPlayTime    = inputTuple[11]
+    var_tags            = inputTuple[12]
 
     # There are several parts to an entry, all on one line
     # The data type refers to the input - \x01 indicates String, \x02 indicates boolean, \x00 indicates list
-    # Or: \x00 = NUL, \x01 = SOH, \x02 = STX, \x08 = BS when viewing vdf in Notepad++ w/ANSI encoding
-    #
     # Strings must be encapsulated in quotes (aside from launch options)
     # Bools treat '\x01' as True and '\x00' as False
     # Lists are as follows: '\x01' + index + '\x00' + tagContents + '\x00'
     # I have no idea about Date. Not sure why LastPlayTime is marked as a bool
     #   4 characters, usually ending in '[' (maybe?). All 4 being '\x00' is fine too (default?).
 
-    # Key                # Data Type  # Internal Name       # Delimiter     # Input             # Delimiter
-    full_entryID        =                                      '\x00'  +  var_entryID        +  '\x00'
-    full_appName        =  '\x01'  +  'AppName'             +  '\x00'  +  var_appName        +  '\x00'
-    full_quotedPath     =  '\x01'  +  'Exe'                 +  '\x00'  +  var_unquotedPath   +  '\x00'
-    full_startDir       =  '\x01'  +  'StartDir'            +  '\x00'  +  var_startDir       +  '\x00'
-    full_iconPath       =  '\x01'  +  'icon'                +  '\x00'  +  var_iconPath       +  '\x00'
-    #
-    full_shortcutPath   =  '\x01'  +  'ShortcutPath'        +  '\x00'  +  var_shortcutPath   +  '\x00'
-    full_launchOptions  =  '\x01'  +  'LaunchOptions'       +  '\x00'  +  var_launchOptions  +  '\x00'
-    full_isHidden       =  '\x02'  +  'IsHidden'            +  '\x00'  +  var_isHidden       +  '\x00\x00\x00\x00'
-    full_allowDeskConf  =  '\x02'  +  'AllowDesktopConfig'  +  '\x00'  +  var_allowDeskConf  +  '\x01\x00\x00\x00'
-    full_allowOverlay   =  '\x02'  +  'AllowOverlay'        +  '\x00'  +  var_allowOverlay   +  '\x01\x00\x00\x00'
-    #
-    full_openVR         =  '\x02'  +  'OpenVR'              +  '\x00'  +  var_openVR         +  '\x00\x00\x00\x00'
-    full_devkit         =  '\x02'  +  'Devkit'              +  '\x00'  +  var_devkit         +  '\x00\x00\x00\x00'
-    full_devkitGameID   =  '\x01'  +  'DevkitGameID'        +  '\x00'  +  var_devkitGameID   +  '\x00'
-    full_lastPlayTime   =  '\x02'  +  'LastPlayTime'        +  '\x00'  +  var_lastPlayTime   # pylint: disable=unused-variable
-    full_tags           =  '\x00'  +  'tags'                +  '\x00'  +  var_tags           +  '\x08\x08'
+    # Key                      # Data Type  # Internal Name       # Delimiter     # Input             # Delimiter
+    full_entryID              =                                      '\x00'  +  var_entryID        +  '\x00'
+    full_appName              =  '\x01'  +  'appName'             +  '\x00'  +  var_appName        +  '\x00'
+    full_quotedPath           =  '\x01'  +  'Exe'                 +  '\x00'  +  var_unquotedPath   +  '\x00'
+    full_startDir             =  '\x01'  +  'StartDir'            +  '\x00'  +  var_startDir       +  '\x00'
+    full_iconPath             =  '\x01'  +  'icon'                +  '\x00'  +  var_iconPath       +  '\x00'
+    full_shortcutPath         =  '\x01'  +  'ShortcutPath'        +  '\x00'  +  var_shortcutPath   +  '\x00'
+    full_launchOptions        =  '\x01'  +  'LaunchOptions'       +  '\x00'  +  var_launchOptions  +  '\x00'
+    full_isHidden             =  '\x02'  +  'IsHidden'            +  '\x00'  +  var_isHidden       +  '\x00\x00\x00'
+    full_allowDeskConf        =  '\x02'  +  'AllowDesktopConfig'  +  '\x00'  +  var_allowDeskConf  +  '\x00\x00\x00'
+    full_allowOverlay         =  '\x02'  +  'AllowOverlay'        +  '\x00'  +  var_allowOverlay   +  '\x00\x00\x00'
+    full_openVR               =  '\x02'  +  'OpenVR'              +  '\x00'  +  var_openVR         +  '\x00\x00\x00'
+    full_devkit               =  '\x02'  +  'Devkit'              +  '\x00\x00\x00\x00\x00'
+    full_devkit_gameId        =  '\x01'  +  'DevkitGameID'        +  '\x00\x00'
+    full_devkit_overrideAppId =  '\x02'  +  'DevkitOverrideAppID' +  '\x00\x00\x00\x00\x00'
+    full_lastPlayTime         =  '\x02'  +  'LastPlayTime'        +  '\x00'  +  var_lastPlayTime
+    full_flatpakID            =  '\x01'  +  'FlatpakAppID'        +  '\x00\x00'
+    full_tags                 =  '\x00'  +  'tags'                +  '\x00'  +  var_tags           +  '\x08\x08'
 
-    newEntry = (full_entryID + full_appName + full_quotedPath + full_startDir +
-                full_iconPath + full_shortcutPath + full_launchOptions + full_isHidden +
-                full_allowDeskConf + full_allowOverlay + full_openVR + full_devkit +
-                full_devkitGameID + full_tags)
-
+    newEntry = full_entryID + full_appName + full_quotedPath + full_startDir + full_iconPath + full_shortcutPath + full_launchOptions + full_isHidden + full_allowDeskConf + full_allowOverlay + full_openVR + full_devkit + full_devkit_gameId + full_devkit_overrideAppId + full_lastPlayTime + full_flatpakID + full_tags
     return newEntry
+    pass
 
 def prepareInput(args, lastEntryInfo):
     # Get all the variables cleaned up
+
     # This is the newest entry, one more than the last one.
-    var_entryID = str(int(lastEntryInfo[0])+1)
+    print("Last entry info: ", lastEntryInfo)
+    var_entryID = str( int(lastEntryInfo[0]) + 1 )
 
     # Strings
     var_appName         =       args[2]
@@ -197,6 +187,8 @@ def prepareInput(args, lastEntryInfo):
     var_iconPath        = '"' + args[5] + '"'
     var_shortcutPath    = '"' + args[6] + '"'
     var_launchOptions   =       args[7]
+
+    #print(args)
 
     # Boolean checks
     if args[8] == '1':
@@ -215,30 +207,20 @@ def prepareInput(args, lastEntryInfo):
         var_openVR = '\x01'
     else:
         var_openVR = '\x00'
-    if args[12] == '1':
-        var_devkit = '\x01'
-    else:
-        var_devkit = '\x00'
-    # add'l string
-    var_devkitGameID = '"' + args[13] + '"'
 
     # Date
     # Since the format hasn't been cracked yet, I'll populate with default
     #   values if you just pass in a '0'. Thank me later.
     var_tags= ''
-    if args[14] == '0':
+    if args[12] == '0':
         var_lastPlayTime = '\x00\x00\x00\x00'
     else:
-        var_lastPlayTime = args[14]
+        var_lastPlayTime = args[12]
 
-    for tag in range(15,len(args)-1):
-        var_tags = var_tags + '\x01' + str(tag-15) + '\x00' + args[tag] + '\x00'
+    for tag in range(13,len(args)-1):
+        var_tags = var_tags + '\x01' + str(tag-13) + '\x00' + args[tag] + '\x00'
 
-    return (var_entryID, var_appName, var_unquotedPath,
-            var_startDir, var_iconPath, var_shortcutPath,
-            var_launchOptions, var_isHidden, var_allowDeskConf,
-            var_allowOverlay, var_openVR, var_devkit,
-            var_devkitGameID, var_lastPlayTime, var_tags)
+    return (var_entryID, var_appName, var_unquotedPath, var_startDir, var_iconPath, var_shortcutPath, var_launchOptions, var_isHidden, var_allowDeskConf, var_allowOverlay, var_openVR, var_lastPlayTime, var_tags)
 
 def getURL(inputTuple):
     # Comments by Scott Rice:
@@ -252,10 +234,8 @@ def getURL(inputTuple):
     # got the xor_in and xor_out from disassembling the steamui library for
     # OSX. The reflect_in, reflect_out, and poly I figured out via trial and
     # error.
-    algorithm = crc_algorithms.Crc(width = 32, poly = 0x04C11DB7,
-                                   reflect_in = True, xor_in = 0xffffffff,
-                                   reflect_out = True, xor_out = 0xffffffff)
-    input_string = ''.join([inputTuple[2], inputTuple[1]])
+    algorithm = crc_algorithms.Crc(width = 32, poly = 0x04C11DB7, reflect_in = True, xor_in = 0xffffffff, reflect_out = True, xor_out = 0xffffffff)
+    input_string = ''.join([inputTuple[2],inputTuple[1]])
     top_32 = algorithm.bit_by_bit(input_string) | 0x80000000
     full_64 = (top_32 << 32) | 0x02000000
     return str(full_64)
@@ -269,8 +249,8 @@ def main():
 
     lastEntryInfo = findLastEntryNumberAndPosition(pathToShortcutsVDF)
     inputTuple = prepareInput(sys.argv, lastEntryInfo)
+    print(pathToShortcutsVDF, inputTuple)
     addEntry(pathToShortcutsVDF, inputTuple)
 
     print(getURL(inputTuple)) # V: Output these to a new file?
-
 main()
